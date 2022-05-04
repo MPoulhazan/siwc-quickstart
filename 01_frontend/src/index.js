@@ -9,22 +9,30 @@ const domain = window.location.host;
 const origin = window.location.origin;
 const ethProvider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = ethProvider.getSigner();
+const DEFAULT_MESSAGE = 'Sign in with Conflux to the app.';
 
-function createSiwcMessage(address, statement) {
+/**
+ *
+ * @param {string} address: Wallet adress
+ * @param {string} statement: Action statement readable for user
+ * @returns Message in string
+ */
+function createSiwcMessage(address, statement, networkId) {
+    console.log(networkId);
     const message = new SiwcMessage({
         domain,
         address,
         statement,
         uri: origin,
         version: '1',
-        chainId: '1030',
+        chainId: networkId,
     });
     messageContent = message;
     return message.prepareMessage();
 }
 
 /**
- * Connect to Metamask
+ * Connect to Conflux eSpace
  */
 function connectMetamaskWallet() {
     ethProvider
@@ -33,7 +41,7 @@ function connectMetamaskWallet() {
 }
 
 /**
- * Connect to Conflux
+ * Connect to Conflux Core
  */
 async function connectFluentWallet() {
     if (!isFluentInstalled()) {
@@ -45,6 +53,10 @@ async function connectFluentWallet() {
         .catch((err) => console.error(err));
 }
 
+/**
+ * Check if fluent is installed on browser
+ * @returns true if fluent is installed
+ */
 function isFluentInstalled() {
     return Boolean(window?.conflux?.isFluent);
 }
@@ -65,7 +77,8 @@ async function getConfluxAccountInfos() {
 async function signInWithConfluxeSpace() {
     const message = createSiwcMessage(
         await signer.getAddress(),
-        'Sign in with Conflux to the app.'
+        DEFAULT_MESSAGE,
+        await getNetworkId(WalletType.METAMASK)
     );
     messageESpaceSignature = await signer.signMessage(message);
 }
@@ -74,49 +87,55 @@ async function signInWithConfluxeSpace() {
  * Sign in with Conflux Core on Fluent
  */
 async function signInWithConfluxCore() {
-    getConfluxAccountInfos().then((account) => {
-        const accountKey = account[0];
-        const message = createSiwcMessage(
-            accountKey,
-            'Sign in with Conflux to the app.'
-        );
+    const account = await getConfluxAccountInfos();
+    const chainId = await getNetworkId(WalletType.FLUENT);
+    const message = createSiwcMessage(account[0], DEFAULT_MESSAGE, chainId);
 
-        const typedData = getCIP23DomainMessage(message, domain);
-
-        // Stringify typeData
-        const typedDataString = JSON.stringify(typedData);
-
-        // Sign Message
-        window.conflux
-            .request({
-                method: `cfx_signTypedData_v4`,
-                params: [accountKey, typedDataString],
-            })
-            .then((signature) => {
-                messageConfluxCoreSignature = signature;
-            })
-            .catch((err) => console.error(err));
-    });
+    // Format message to CIP23
+    const typedData = JSON.stringify(
+        getCIP23DomainMessage(message, domain, chainId)
+    );
+    // Sign Message
+    window.conflux
+        .request({
+            method: `cfx_signTypedData_v4`,
+            params: [account[0], typedData],
+        })
+        .then((signature) => {
+            messageConfluxCoreSignature = signature;
+        })
+        .catch((err) => console.error(err));
 }
 
 // TODO Delete ?
 function verifyConfluxLogin() {
-    console.log('Verify message : ', messageContent);
-    console.log('Verify signature ', messageESpaceSignature);
     messageContent
         .validate(messageESpaceSignature, WalletType.METAMASK)
         .then((res) => {
             console.log('Contract response ', res);
         });
 }
-function verifyFluentLogin() {
-    console.log('Verify message : ', messageContent);
-    console.log('Verify signature ', messageConfluxCoreSignature);
+async function verifyFluentLogin() {
     messageContent
         .validate(messageConfluxCoreSignature, WalletType.FLUENT)
         .then((res) => {
             console.log('Contract response ', res);
         });
+}
+
+async function getNetworkId(walletType) {
+    // @ts-ignore
+    return !walletType || WalletType.METAMASK
+        ? Promise.resolve(1)
+        : window.conflux
+              .request({
+                  method: `cfx_getStatus`,
+                  params: [],
+              })
+              .then((res) => {
+                  return parseInt(res.networkId, 16);
+              })
+              .catch((err) => console.error(err));
 }
 
 const connectWalletBtn = document.getElementById('connectWalletBtn');
