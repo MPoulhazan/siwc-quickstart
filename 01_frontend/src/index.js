@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { SiwcMessage, getCIP23DomainMessage, WalletType } from 'siwc';
+import { SiwcMessage, getCIP23DomainMessage, Space } from 'siwc';
 
 let messageESpaceSignature = '';
 let messageConfluxCoreSignature = '';
@@ -18,7 +18,6 @@ const DEFAULT_MESSAGE = 'Sign in with Conflux to the app.';
  * @returns Message in string
  */
 function createSiwcMessage(address, statement, networkId) {
-    console.log(networkId);
     const message = new SiwcMessage({
         domain,
         address,
@@ -74,11 +73,11 @@ async function getConfluxAccountInfos() {
 /**
  * Sign in with conflux eSpace on Metamask
  */
-async function signInWithConfluxeSpace() {
+async function signInWithESpace() {
     const message = createSiwcMessage(
         await signer.getAddress(),
         DEFAULT_MESSAGE,
-        await getNetworkId(WalletType.METAMASK)
+        await getNetworkId(Space.CONFLUX_E_SPACE)
     );
     messageESpaceSignature = await signer.signMessage(message);
 }
@@ -88,7 +87,7 @@ async function signInWithConfluxeSpace() {
  */
 async function signInWithConfluxCore() {
     const account = await getConfluxAccountInfos();
-    const chainId = await getNetworkId(WalletType.FLUENT);
+    const chainId = await getNetworkId(Space.CONFLUX_CORE);
     const message = createSiwcMessage(account[0], DEFAULT_MESSAGE, chainId);
 
     // Format message to CIP23
@@ -110,14 +109,14 @@ async function signInWithConfluxCore() {
 // TODO Delete ?
 function verifyConfluxLogin() {
     messageContent
-        .validate(messageESpaceSignature, WalletType.METAMASK)
+        .validate(messageESpaceSignature, Space.CONFLUX_E_SPACE)
         .then((res) => {
             console.log('Contract response ', res);
         });
 }
 async function verifyFluentLogin() {
     messageContent
-        .validate(messageConfluxCoreSignature, WalletType.FLUENT)
+        .validate(messageConfluxCoreSignature, Space.CONFLUX_CORE)
         .then((res) => {
             console.log('Contract response ', res);
         });
@@ -125,7 +124,7 @@ async function verifyFluentLogin() {
 
 async function getNetworkId(walletType) {
     // @ts-ignore
-    return !walletType || WalletType.METAMASK
+    return !walletType || Space.CONFLUX_E_SPACE
         ? Promise.resolve(1)
         : window.conflux
               .request({
@@ -146,7 +145,7 @@ const verifyMmBtn = document.getElementById('verifyMmBtn');
 const verifyFtBtn = document.getElementById('verifyFtBtn');
 connectWalletBtn.onclick = connectMetamaskWallet;
 connectCfxWalletBtn.onclick = connectFluentWallet;
-siwcBtn.onclick = signInWithConfluxeSpace;
+siwcBtn.onclick = signInWithESpace;
 siwcFluentBtn.onclick = signInWithConfluxCore;
 verifyMmBtn.onclick = verifyConfluxLogin;
 verifyFtBtn.onclick = verifyFluentLogin;
