@@ -1672,7 +1672,7 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
-ethers@^5.5.1, ethers@^5.5.3:
+ethers@^5.5.3:
   version "5.6.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.6.2.tgz#e75bac7f038c5e0fdde667dba62fc223924143a2"
   integrity sha512-EzGCbns24/Yluu7+ToWnMca3SXJ1Jk1BvWB7CCmVNxyOeM4LLvw2OLuIHhlkhQk1dtOcj9UMsdkxUh8RiG1dxQ==
@@ -3174,14 +3174,21 @@ signal-exit@^3.0.3:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
   integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
 
-siwe@^1.0.0:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/siwe/-/siwe-1.1.2.tgz#64298314240043fc5ecb1fb843f0b1ed071c4a08"
-  integrity sha512-4ULAK3//I4mXM4JUiL9Amh/YIsSjCyy22nh9HMf0Y0omWmKSz+9M+exVDVa4TZqnopwmg+2Rn0tjtWOF8iLtPQ==
+siwc-parser@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/siwc-parser/-/siwc-parser-1.0.1.tgz#240a61a5f1c816dfb16774df100ac7d29ba33397"
+  integrity sha512-sYpfRu7j3MbKiGh3RzZah3jGSV6tVLN8g5+QCPH13EZ13hcIEHa0cHD9zteSpdl3z0zywgL+MFBPMiOojsFZWA==
+  dependencies:
+    apg-js "^4.1.1"
+
+siwc@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/siwc/-/siwc-1.0.2.tgz#dde5848a046f03495b0ee7a6d9efe48019ae2e4e"
+  integrity sha512-82kqWihfuz8OR1fIMyTNU2DTEPJtEodBj4gVXuJ4r1ufOrZOgujU3GyvFQE7O9wPkQYZoq41ECEVPxW34zVy4w==
   dependencies:
     "@stablelib/random" "^1.0.1"
     apg-js "^4.1.1"
-    ethers "^5.5.1"
+    siwc-parser "^1.0.0"
 
 slash@^3.0.0:
   version "3.0.0"
