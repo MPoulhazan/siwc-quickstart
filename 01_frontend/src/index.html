@@ -3,22 +3,71 @@
     <head>
         <meta charset="utf-8" />
         <title>SIWC Quickstart</title>
+        <style>
+            body > div {
+                display: flex;
+                text-align: center;
+            }
+            .button {
+                background-color: #3ab9cc;
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 18px;
+                margin: 6px 2px;
+                cursor: pointer;
+            }
+        </style>
     </head>
 
     <body>
-        <div><button id="connectWalletBtn">Connect wallet</button></div>
-        <div><button id="connectCfxWalletBtn">Connect CFX wallet</button></div>
         <div>
-            <button id="siwcBtn">Sign-in with Conflux eSpace</button>
+            <div class="metamask">
+                <div>
+                    <button id="connectWalletBtn" class="button">
+                        Connect Metamask
+                    </button>
+                </div>
+                <div>
+                    <button id="siwcBtn" class="button">
+                        Sign-in with Conflux eSpace
+                    </button>
+                </div>
+                <div>
+                    <button
+                        id="verifyESpaceBtn"
+                        class="button"
+                        style="display: none"
+                    >
+                        Verify Conflux eSpace token
+                    </button>
+                </div>
+            </div>
+            <div class="fluent">
+                <div>
+                    <button id="connectCfxWalletBtn" class="button">
+                        Connect Fluent
+                    </button>
+                </div>
+                <div>
+                    <button id="siwcFluentBtn" class="button">
+                        Sign-in with Conflux Core Space
+                    </button>
+                </div>
+                <div>
+                    <button
+                        id="verifyCoreBtn"
+                        class="button"
+                        style="display: none"
+                    >
+                        Verify Conflux Core Space token
+                    </button>
+                </div>
+            </div>
         </div>
-        <div>
-            <button id="siwcFluentBtn">Sign-in with Conflux Core Space</button>
-        </div>
-        <div>
-            <button id="verifyMmBtn">Verify Metamask token</button>
-        </div>
-        <div>
-            <button id="verifyFtBtn">Verify Fluent token</button>
-        </div>
+        <h3>Check results in console</h3>
     </body>
 </html>

@@ -1,15 +1,25 @@
 import { ethers } from 'ethers';
 import { SiwcMessage, getCIP23DomainMessage, Space } from 'siwc';
 
-let messageESpaceSignature = '';
-let messageConfluxCoreSignature = '';
-let messageContent = null;
-
+// Params
 const domain = window.location.host;
 const origin = window.location.origin;
 const ethProvider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = ethProvider.getSigner();
 const DEFAULT_MESSAGE = 'Sign in with Conflux to the app.';
+
+// Template elements
+const connectWalletBtn = document.getElementById('connectWalletBtn');
+const connectCfxWalletBtn = document.getElementById('connectCfxWalletBtn');
+const siwcBtn = document.getElementById('siwcBtn');
+const siwcFluentBtn = document.getElementById('siwcFluentBtn');
+const verifyESpaceBtn = document.getElementById('verifyESpaceBtn');
+const verifyCoreBtn = document.getElementById('verifyCoreBtn');
+
+// Vars
+let messageESpaceSignature = '';
+let messageConfluxCoreSignature = '';
+let messageContent = null;
 
 /**
  *
@@ -33,7 +43,7 @@ function createSiwcMessage(address, statement, networkId) {
 /**
  * Connect to Conflux eSpace
  */
-function connectMetamaskWallet() {
+function connectEspaceWallet() {
     ethProvider
         .send('eth_requestAccounts', [])
         .catch(() => console.log('user rejected request'));
@@ -42,7 +52,7 @@ function connectMetamaskWallet() {
 /**
  * Connect to Conflux Core
  */
-async function connectFluentWallet() {
+async function connectCoreWallet() {
     if (!isFluentInstalled()) {
         console.error('Please install Fluent Wallet');
         return;
@@ -80,6 +90,8 @@ async function signInWithESpace() {
         await getNetworkId(Space.CONFLUX_E_SPACE)
     );
     messageESpaceSignature = await signer.signMessage(message);
+    verifyCoreBtn.style.display = 'none';
+    verifyESpaceBtn.style.display = 'block';
 }
 
 /**
@@ -102,23 +114,24 @@ async function signInWithConfluxCore() {
         })
         .then((signature) => {
             messageConfluxCoreSignature = signature;
+            verifyESpaceBtn.style.display = 'none';
+            verifyCoreBtn.style.display = 'block';
         })
         .catch((err) => console.error(err));
 }
 
-// TODO Delete ?
-function verifyConfluxLogin() {
+function verifyESpaceLogin() {
     messageContent
         .validate(messageESpaceSignature, Space.CONFLUX_E_SPACE)
         .then((res) => {
-            console.log('Contract response ', res);
+            console.log('Sign in valid! contract response ', res);
         });
 }
-async function verifyFluentLogin() {
+async function verifyCoreLogin() {
     messageContent
         .validate(messageConfluxCoreSignature, Space.CONFLUX_CORE)
         .then((res) => {
-            console.log('Contract response ', res);
+            console.log('Sign in valid! Contract response ', res);
         });
 }
 
@@ -137,15 +150,9 @@ async function getNetworkId(walletType) {
               .catch((err) => console.error(err));
 }
 
-const connectWalletBtn = document.getElementById('connectWalletBtn');
-const connectCfxWalletBtn = document.getElementById('connectCfxWalletBtn');
-const siwcBtn = document.getElementById('siwcBtn');
-const siwcFluentBtn = document.getElementById('siwcFluentBtn');
-const verifyMmBtn = document.getElementById('verifyMmBtn');
-const verifyFtBtn = document.getElementById('verifyFtBtn');
-connectWalletBtn.onclick = connectMetamaskWallet;
-connectCfxWalletBtn.onclick = connectFluentWallet;
+connectWalletBtn.onclick = connectEspaceWallet;
+connectCfxWalletBtn.onclick = connectCoreWallet;
 siwcBtn.onclick = signInWithESpace;
 siwcFluentBtn.onclick = signInWithConfluxCore;
-verifyMmBtn.onclick = verifyConfluxLogin;
-verifyFtBtn.onclick = verifyFluentLogin;
+verifyESpaceBtn.onclick = verifyESpaceLogin;
+verifyCoreBtn.onclick = verifyCoreLogin;

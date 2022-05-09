@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express from 'express';
-import { generateNonce, SiwcMessage } from 'siwc';
+import { generateNonce, SiwcMessage, Space } from 'siwc';
 
 const EXPOSED_PORT = 3000;
 const app = express();
@@ -15,10 +15,12 @@ app.get('/nonce', function (_, res) {
 });
 
 app.post('/verify', async function (req, res) {
-    const { message, signature } = req.body;
+    const { message, signature, space } = req.body;
     const siwcMessage = new SiwcMessage(message);
+    const spaceEnum =
+        space === 'core' ? Space.CONFLUX_CORE : Space.CONFLUX_E_SPACE;
     try {
-        await siwcMessage.validate(signature, Space.CONFLUX_E_SPACE);
+        await siwcMessage.validate(signature, spaceEnum);
         res.send(true);
     } catch {
         res.send(false);
