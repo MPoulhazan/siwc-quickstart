@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { SiwcMessage, getCIP23DomainMessage, Space } from 'siwc';
+import { SiwcMessage, Space } from 'siwc';
 
 // Params
 const domain = window.location.host;
@@ -102,15 +102,11 @@ async function signInWithConfluxCore() {
     const chainId = await getNetworkId(Space.CONFLUX_CORE);
     const message = createSiwcMessage(account[0], DEFAULT_MESSAGE, chainId);
 
-    // Format message to CIP23
-    const typedData = JSON.stringify(
-        getCIP23DomainMessage(message, domain, chainId)
-    );
     // Sign Message
     window.conflux
         .request({
-            method: `cfx_signTypedData_v4`,
-            params: [account[0], typedData],
+            method: `personal_sign`,
+            params: [message, account[0]],
         })
         .then((signature) => {
             messageConfluxCoreSignature = signature;
