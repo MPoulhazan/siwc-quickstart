@@ -16,8 +16,12 @@ const domain = window.location.host;
 const origin = window.location.origin;
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 const signer = provider.getSigner();
+const today = new Date();
 
 const BACKEND_ADDR = 'http://localhost:3000';
+const SIGNIN_VALIDITY_END_DAYS = 1; // Expire tomorrow
+const SIGNIN_VALIDITY_START_DAYS = 1; // valid since 1 day
+
 async function createSiwcMessage(address, statement, networkId) {
     const res = await fetch(`${BACKEND_ADDR}/nonce`, {
         credentials: 'include',
@@ -30,6 +34,12 @@ async function createSiwcMessage(address, statement, networkId) {
         version: '1',
         chainId: networkId || 1,
         nonce: await res.text(),
+        expirationTime: new Date(
+            today.setDate(today.getDate() + SIGNIN_VALIDITY_END_DAYS)
+        ).toISOString(),
+        notBefore: new Date(
+            today.setDate(today.getDate() + SIGNIN_VALIDITY_START_DAYS)
+        ).toISOString(),
     });
     return message.prepareMessage();
 }

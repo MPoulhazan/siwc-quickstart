@@ -16,6 +16,6 @@
         "express": "^4.17.2",
         "express-session": "^1.17.2",
         "js-conflux-sdk": "^2.0.7",
-        "siwc": "^1.0.4"
+        "siwc": "^1.0.5"
     }
 }
