@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import Session from 'express-session';
-import { generateNonce, SiwcMessage, Space } from 'siwc';
+import { generateNonce, SiwcMessage, Space, ErrorTypes } from 'siwc';
 
 const app = express();
 app.use(express.json());
